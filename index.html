@@ -1,0 +1,2966 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slot Asset Showcase - final_assets</title>
+    <style>
+        :root {
+            --bg-dark: #1e1e1e;
+            --bg-sidebar: #252526;
+            --bg-card: #333333;
+            --text-main: #cccccc;
+            --text-header: #ffffff;
+            --accent: #007acc;
+            --border: #454545;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background-color: var(--bg-sidebar);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+        .sidebar h2 {
+            color: var(--text-header);
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 10px;
+        }
+        .nav-link {
+            color: var(--text-main);
+            text-decoration: none;
+            padding: 8px 12px;
+            margin-bottom: 5px;
+            border-radius: 4px;
+            transition: background 0.2s;
+            display: block;
+        }
+        .nav-link:hover {
+            background-color: var(--bg-card);
+            color: var(--text-header);
+        }
+        .nav-link.active {
+            background-color: var(--accent);
+            color: white;
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex-grow: 1;
+            padding: 40px;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+        .category-section {
+            margin-bottom: 60px;
+            scroll-margin-top: 20px;
+        }
+        .category-title {
+            color: var(--text-header);
+            font-size: 2rem;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+        }
+        
+        /* Carousels */
+        .carousel-container {
+            margin-bottom: 40px;
+            position: relative;
+            max-width: 1200px; /* Limit width to keep it centered */
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .carousel-header {
+            color: var(--text-header);
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--accent);
+            padding-left: 10px;
+            text-align: left; /* Keep header left aligned relative to container */
+        }
+        .carousel-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center; /* Center the carousel content */
+        }
+        .carousel {
+            display: flex;
+            overflow-x: auto;
+            gap: 15px;
+            padding-bottom: 15px;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            width: 100%;
+            scrollbar-width: none; /* Firefox */
+        }
+        .carousel::-webkit-scrollbar {
+            display: none; /* Hide scrollbar for cleaner look */
+        }
+        .carousel-btn {
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            position: absolute;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            transition: all 0.2s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+        }
+        .carousel-btn:hover {
+            background-color: var(--accent);
+            transform: scale(1.1);
+        }
+        .carousel-btn.prev { left: -25px; }
+        .carousel-btn.next { right: -25px; }
+        
+        .carousel-item {
+            flex: 0 0 auto;
+            scroll-snap-align: center; /* Center items when snapping */
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            height: 400px;
+            min-width: 200px; /* Ensure clickable area */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .carousel-item img {
+            height: 100%;
+            width: auto;
+            object-fit: contain;
+        }
+
+        /* Grid */
+        .asset-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        /* Asset Card */
+        .asset-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .preview-container {
+            height: 180px;
+            background-color: #111; /* Checkerboard pattern could go here */
+            background-image: 
+                linear-gradient(45deg, #1a1a1a 25%, transparent 25%), 
+                linear-gradient(-45deg, #1a1a1a 25%, transparent 25%), 
+                linear-gradient(45deg, transparent 75%, #1a1a1a 75%), 
+                linear-gradient(-45deg, transparent 75%, #1a1a1a 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+        }
+        .preview-img {
+            max-height: 100%;
+            max-width: 100%;
+            object-fit: contain;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        .card-body {
+            padding: 15px;
+            flex-grow: 1;
+        }
+        .asset-name {
+            color: var(--text-header);
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .specs-table {
+            width: 100%;
+            font-size: 0.85rem;
+            color: #aaa;
+            margin-bottom: 10px;
+        }
+        .specs-table td {
+            padding: 2px 0;
+        }
+        .specs-label {
+            font-weight: 600;
+            width: 80px;
+        }
+        .notes-area {
+            width: 100%;
+            background-color: #252526;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            border-radius: 4px;
+            padding: 8px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            resize: vertical;
+            min-height: 60px;
+            box-sizing: border-box;
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-left: 5px;
+        }
+        .badge-anim { background-color: #d7ba7d; color: #1e1e1e; }
+        .badge-static { background-color: #4ec9b0; color: #1e1e1e; }
+        
+        footer {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>📂 Categories</h2>
+        <nav>
+            
+            <a href="#game-previews" class="nav-link">Game Previews</a>
+            
+            
+            <a href="#cat-symbols" class="nav-link">symbols</a>
+            
+            <a href="#cat-bitmapfont" class="nav-link">bitmapfont</a>
+            
+            <a href="#cat-logo_frame" class="nav-link">logo_frame</a>
+            
+            <a href="#cat-static" class="nav-link">static</a>
+            
+            <a href="#cat-symbols_simple" class="nav-link">symbols_simple</a>
+            
+            <a href="#cat-win_celebrations" class="nav-link">win_celebrations</a>
+            
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <header>
+            <h1 style="color: white; margin-top: 0;">Asset Showcase: final_assets</h1>
+            <p>Generated on 2025-11-25 18:05</p>
+        </header>
+
+        
+        <div id="game-previews" class="category-section">
+            <h2 class="category-title">Game Previews</h2>
+            
+            
+            <div class="carousel-container">
+                <h3 class="carousel-header">Landscape</h3>
+                <div class="carousel-wrapper">
+                    <button class="carousel-btn prev" onclick="scrollCarousel(this, -1)">&#10094;</button>
+                    <div class="carousel">
+                        
+                        <div class="carousel-item">
+                            <img src="_previews\1 landscape_intro_1764086731.webp" alt="1 landscape_intro">
+                        </div>
+                        
+                        <div class="carousel-item">
+                            <img src="_previews\2 landscape_feature_1764086731.webp" alt="2 landscape_feature">
+                        </div>
+                        
+                        <div class="carousel-item">
+                            <img src="_previews\3 landscape_main_1764086731.webp" alt="3 landscape_main">
+                        </div>
+                        
+                        <div class="carousel-item">
+                            <img src="_previews\4 landscape_feature_trigger_1764086731.webp" alt="4 landscape_feature_trigger">
+                        </div>
+                        
+                        <div class="carousel-item">
+                            <img src="_previews\5 landscape_feature_1764086731.webp" alt="5 landscape_feature">
+                        </div>
+                        
+                        <div class="carousel-item">
+                            <img src="_previews\6 landscape_feature result_1764086731.webp" alt="6 landscape_feature result">
+                        </div>
+                        
+                        <div class="carousel-item">
+                            <img src="_previews\7 landscape_bonus_game_1764086731.webp" alt="7 landscape_bonus_game">
+                        </div>
+                        
+                        <div class="carousel-item">
+                            <img src="_previews\8 landscape_bonus_summary_1764086731.webp" alt="8 landscape_bonus_summary">
+                        </div>
+                        
+                    </div>
+                    <button class="carousel-btn next" onclick="scrollCarousel(this, 1)">&#10095;</button>
+                </div>
+            </div>
+            
+
+            
+            <div class="carousel-container">
+                <h3 class="carousel-header">Portrait</h3>
+                <div class="carousel-wrapper">
+                    <button class="carousel-btn prev" onclick="scrollCarousel(this, -1)">&#10094;</button>
+                    <div class="carousel">
+                        
+                        <div class="carousel-item">
+                            <img src="_previews\1 portrait_intro_1764086731.webp" alt="1 portrait_intro">
+                        </div>
+                        
+                        <div class="carousel-item">
+                            <img src="_previews\2 portrait_feature_1764086732.webp" alt="2 portrait_feature">
+                        </div>
+                        
+                        <div class="carousel-item">
+                            <img src="_previews\3 portrait_main_1764086732.webp" alt="3 portrait_main">
+                        </div>
+                        
+                        <div class="carousel-item">
+                            <img src="_previews\4 portrait_feature_trigger_1764086732.webp" alt="4 portrait_feature_trigger">
+                        </div>
+                        
+                        <div class="carousel-item">
+                            <img src="_previews\5 portrait_feature_1764086732.webp" alt="5 portrait_feature">
+                        </div>
+                        
+                        <div class="carousel-item">
+                            <img src="_previews\6 portrait_feature result_1764086732.webp" alt="6 portrait_feature result">
+                        </div>
+                        
+                        <div class="carousel-item">
+                            <img src="_previews\7 portrait_bonus_game_1764086732.webp" alt="7 portrait_bonus_game">
+                        </div>
+                        
+                        <div class="carousel-item">
+                            <img src="_previews\8 portrait_bonus_summary_1764086732.webp" alt="8 portrait_bonus_summary">
+                        </div>
+                        
+                    </div>
+                    <button class="carousel-btn next" onclick="scrollCarousel(this, 1)">&#10095;</button>
+                </div>
+            </div>
+            
+        </div>
+        
+
+        
+        
+        <div id="cat-symbols" class="category-section">
+            <h2 class="category-title">symbols <span style="font-size: 1rem; color: #666;">(23 items)</span></h2>
+            
+            <div class="asset-grid">
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\001_1764086725.webp" alt="001" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            001
+                            
+                            <span class="badge badge-anim">Anim</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>150 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>30</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>1.8 MB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\001_blur_1764086727.webp" alt="001_blur" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            001_blur
+                            
+                            <span class="badge badge-anim">Anim</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>143 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>2</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>103.1 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\002_1764086725.webp" alt="002" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            002
+                            
+                            <span class="badge badge-anim">Anim</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>150 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>30</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>1.8 MB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\002_blur_1764086727.webp" alt="002_blur" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            002_blur
+                            
+                            <span class="badge badge-anim">Anim</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>143 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>2</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>110.0 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\003_1764086725.webp" alt="003" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            003
+                            
+                            <span class="badge badge-anim">Anim</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>150 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>30</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>1.9 MB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\003_blur_1764086727.webp" alt="003_blur" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            003_blur
+                            
+                            <span class="badge badge-anim">Anim</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>143 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>2</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>98.7 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\004_1764086726.webp" alt="004" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            004
+                            
+                            <span class="badge badge-anim">Anim</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>150 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>30</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>2.9 MB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\004_blur_1764086727.webp" alt="004_blur" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            004_blur
+                            
+                            <span class="badge badge-anim">Anim</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>124 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>2</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>175.4 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\005_1764086726.webp" alt="005" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            005
+                            
+                            <span class="badge badge-anim">Anim</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>150 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>30</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>3.1 MB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\005_blur_1764086727.webp" alt="005_blur" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            005_blur
+                            
+                            <span class="badge badge-anim">Anim</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>124 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>2</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>177.9 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\006_1764086726.webp" alt="006" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            006
+                            
+                            <span class="badge badge-anim">Anim</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>150 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>30</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>2.9 MB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\006_blur_1764086727.webp" alt="006_blur" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            006_blur
+                            
+                            <span class="badge badge-anim">Anim</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>124 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>2</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>168.3 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\007_1764086726.webp" alt="007" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            007
+                            
+                            <span class="badge badge-anim">Anim</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>150 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>30</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>3.3 MB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\007_blur_1764086727.webp" alt="007_blur" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            007_blur
+                            
+                            <span class="badge badge-anim">Anim</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>124 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>2</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>169.9 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\008_1764086726.webp" alt="008" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            008
+                            
+                            <span class="badge badge-anim">Anim</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>150 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>30</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>3.1 MB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\008_blur_1764086727.webp" alt="008_blur" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            008_blur
+                            
+                            <span class="badge badge-anim">Anim</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>124 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>2</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>168.4 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\009_1764086726.webp" alt="009" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            009
+                            
+                            <span class="badge badge-anim">Anim</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>150 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>30</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>2.6 MB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\009_blur_1764086727.webp" alt="009_blur" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            009_blur
+                            
+                            <span class="badge badge-anim">Anim</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>124 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>2</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>131.0 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\009_hit_1764086726.webp" alt="009_hit" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            009_hit
+                            
+                            <span class="badge badge-anim">Anim</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>150 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>16</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>1.3 MB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\010_1764086726.webp" alt="010" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            010
+                            
+                            <span class="badge badge-anim">Anim</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>50 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>30</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>3.3 MB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\010_blur_1764086727.webp" alt="010_blur" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            010_blur
+                            
+                            <span class="badge badge-anim">Anim</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>124 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>2</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>170.9 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\010_expand_1764086726.webp" alt="010_expand" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            010_expand
+                            
+                            <span class="badge badge-anim">Anim</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>50 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>31</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>5.9 MB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\010_expand_win_1764086727.webp" alt="010_expand_win" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            010_expand_win
+                            
+                            <span class="badge badge-anim">Anim</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>50 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>31</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>8.3 MB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div id="cat-bitmapfont" class="category-section">
+            <h2 class="category-title">bitmapfont <span style="font-size: 1rem; color: #666;">(2 items)</span></h2>
+            
+            <div class="asset-grid">
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\wintext_1764086724.webp" alt="wintext" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            wintext
+                            
+                            <span class="badge badge-static">Static</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>127 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>.png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>264.5 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\wintext_base_1764086724.webp" alt="wintext_base" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            wintext_base
+                            
+                            <span class="badge badge-static">Static</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>1811 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>.png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>249.0 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div id="cat-logo_frame" class="category-section">
+            <h2 class="category-title">logo_frame <span style="font-size: 1rem; color: #666;">(1 items)</span></h2>
+            
+            <div class="asset-grid">
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\logo_frame_1764086724.webp" alt="logo_frame" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            logo_frame
+                            
+                            <span class="badge badge-anim">Anim</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>525 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>30</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>4.0 MB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div id="cat-static" class="category-section">
+            <h2 class="category-title">static <span style="font-size: 1rem; color: #666;">(31 items)</span></h2>
+            
+            <div class="asset-grid">
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\_modal_1764086725.webp" alt="_modal" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            _modal
+                            
+                            <span class="badge badge-static">Static</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>263 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>.png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>325.6 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\_modal_mobile_1764086725.webp" alt="_modal_mobile" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            _modal_mobile
+                            
+                            <span class="badge badge-static">Static</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>148 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>.png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>279.0 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\button_green_desktop_1764086725.webp" alt="button_green_desktop" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            button_green_desktop
+                            
+                            <span class="badge badge-static">Static</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>467 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>.png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>2.6 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\button_red_desktop_1764086725.webp" alt="button_red_desktop" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            button_red_desktop
+                            
+                            <span class="badge badge-static">Static</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>467 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>.png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>2.1 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\buy_btn_1764086725.webp" alt="buy_btn" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            buy_btn
+                            
+                            <span class="badge badge-static">Static</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>236 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>.png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>3.1 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\buy_btn_text_1764086725.webp" alt="buy_btn_text" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            buy_btn_text
+                            
+                            <span class="badge badge-static">Static</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>236 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>.png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>10.3 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\claim_btn_1764086725.webp" alt="claim_btn" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            claim_btn
+                            
+                            <span class="badge badge-static">Static</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>444 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>.png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>12.9 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\claim_notext_btn_1764086725.webp" alt="claim_notext_btn" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            claim_notext_btn
+                            
+                            <span class="badge badge-static">Static</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>444 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>.png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>1.2 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\feature_landscape_1764086725.webp" alt="feature_landscape" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            feature_landscape
+                            
+                            <span class="badge badge-static">Static</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>266 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>.png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>2.1 MB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\feature_portrait_1764086725.webp" alt="feature_portrait" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            feature_portrait
+                            
+                            <span class="badge badge-static">Static</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>84 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>.png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>1.9 MB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\intro_landscape_1764086725.webp" alt="intro_landscape" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            intro_landscape
+                            
+                            <span class="badge badge-static">Static</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>266 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>.jpg</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>1.2 MB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\intro_portrait_1764086725.webp" alt="intro_portrait" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            intro_portrait
+                            
+                            <span class="badge badge-static">Static</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>84 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>.jpg</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>1.1 MB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\logo_frame_1764086725.webp" alt="logo_frame" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            logo_frame
+                            
+                            <span class="badge badge-static">Static</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>507 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>.png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>126.3 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\logo_intro_1764086725.webp" alt="logo_intro" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            logo_intro
+                            
+                            <span class="badge badge-static">Static</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>238 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>.png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>562.6 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\main_landscape_1764086725.webp" alt="main_landscape" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            main_landscape
+                            
+                            <span class="badge badge-static">Static</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>266 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>.jpg</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>793.1 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\main_portrait_1764086725.webp" alt="main_portrait" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            main_portrait
+                            
+                            <span class="badge badge-static">Static</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>84 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>.jpg</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>889.8 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\reel_mask_1764086725.webp" alt="reel_mask" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            reel_mask
+                            
+                            <span class="badge badge-static">Static</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>266 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>.png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>9.7 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\spin_btn_1764086725.webp" alt="spin_btn" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            spin_btn
+                            
+                            <span class="badge badge-static">Static</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>150 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>.png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>35.8 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\spin_notext_btn_1764086725.webp" alt="spin_notext_btn" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            spin_notext_btn
+                            
+                            <span class="badge badge-static">Static</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>150 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>.png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>27.7 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\wheel_foreground_1764086725.webp" alt="wheel_foreground" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            wheel_foreground
+                            
+                            <span class="badge badge-static">Static</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>150 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>.png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>337.2 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\wheel_segment_1764086725.webp" alt="wheel_segment" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            wheel_segment
+                            
+                            <span class="badge badge-static">Static</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>150 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>.png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>69.8 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\wheel_values_1764086725.webp" alt="wheel_values" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            wheel_values
+                            
+                            <span class="badge badge-static">Static</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>150 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>.png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>82.2 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\wheelBg_1764086725.webp" alt="wheelBg" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            wheelBg
+                            
+                            <span class="badge badge-static">Static</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>150 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>.png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>447.9 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\wheelBg_bake_1764086725.webp" alt="wheelBg_bake" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            wheelBg_bake
+                            
+                            <span class="badge badge-static">Static</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>150 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>.png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>509.9 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\wheelBg_blur_1764086725.webp" alt="wheelBg_blur" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            wheelBg_blur
+                            
+                            <span class="badge badge-static">Static</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>150 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>.png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>293.5 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\wheelBg_blur_2_1764086725.webp" alt="wheelBg_blur_2" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            wheelBg_blur_2
+                            
+                            <span class="badge badge-static">Static</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>150 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>.png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>275.7 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\wheelBg_blur_2_bake_1764086725.webp" alt="wheelBg_blur_2_bake" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            wheelBg_blur_2_bake
+                            
+                            <span class="badge badge-static">Static</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>150 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>.png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>388.7 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\wheelBg_blur_bake_1764086725.webp" alt="wheelBg_blur_bake" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            wheelBg_blur_bake
+                            
+                            <span class="badge badge-static">Static</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>150 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>.png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>417.4 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\wheelPointer__1764086725.webp" alt="wheelPointer_" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            wheelPointer_
+                            
+                            <span class="badge badge-static">Static</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>97 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>.png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>16.3 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\wheelwinmask_1764086725.webp" alt="wheelwinmask" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            wheelwinmask
+                            
+                            <span class="badge badge-static">Static</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>150 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>.png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>12.9 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\wheelwinmask_inverted_1764086725.webp" alt="wheelwinmask_inverted" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            wheelwinmask_inverted
+                            
+                            <span class="badge badge-static">Static</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>150 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>.png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>8.5 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div id="cat-symbols_simple" class="category-section">
+            <h2 class="category-title">symbols_simple <span style="font-size: 1rem; color: #666;">(11 items)</span></h2>
+            
+            <div class="asset-grid">
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\001_1764086727.webp" alt="001" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            001
+                            
+                            <span class="badge badge-static">Static</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>150 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>.png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>66.7 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\002_1764086727.webp" alt="002" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            002
+                            
+                            <span class="badge badge-static">Static</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>150 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>.png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>60.8 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\003_1764086727.webp" alt="003" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            003
+                            
+                            <span class="badge badge-static">Static</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>150 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>.png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>63.1 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\004_1764086727.webp" alt="004" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            004
+                            
+                            <span class="badge badge-static">Static</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>150 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>.png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>106.4 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\005_1764086727.webp" alt="005" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            005
+                            
+                            <span class="badge badge-static">Static</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>150 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>.png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>115.0 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\006_1764086727.webp" alt="006" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            006
+                            
+                            <span class="badge badge-static">Static</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>150 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>.png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>101.6 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\007_1764086727.webp" alt="007" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            007
+                            
+                            <span class="badge badge-static">Static</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>150 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>.png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>112.3 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\008_1764086727.webp" alt="008" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            008
+                            
+                            <span class="badge badge-static">Static</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>150 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>.png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>115.6 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\009_1764086727.webp" alt="009" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            009
+                            
+                            <span class="badge badge-static">Static</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>150 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>.png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>84.7 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\010_1764086727.webp" alt="010" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            010
+                            
+                            <span class="badge badge-static">Static</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>150 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>.png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>118.9 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\010_expand_1764086727.webp" alt="010_expand" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            010_expand
+                            
+                            <span class="badge badge-static">Static</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>50 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>.png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>318.9 KB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div id="cat-win_celebrations" class="category-section">
+            <h2 class="category-title">win_celebrations <span style="font-size: 1rem; color: #666;">(8 items)</span></h2>
+            
+            <div class="asset-grid">
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\big_win_1764086727.webp" alt="big_win" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            big_win
+                            
+                            <span class="badge badge-anim">Anim</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>546 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>30</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>13.7 MB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\big_win_portrait_1764086728.webp" alt="big_win_portrait" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            big_win_portrait
+                            
+                            <span class="badge badge-anim">Anim</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>533 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>30</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>12.5 MB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\mega_win_1764086728.webp" alt="mega_win" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            mega_win
+                            
+                            <span class="badge badge-anim">Anim</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>589 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>30</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>16.0 MB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\mega_win_portrait_1764086729.webp" alt="mega_win_portrait" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            mega_win_portrait
+                            
+                            <span class="badge badge-anim">Anim</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>533 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>30</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>17.2 MB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\suspense_1764086729.webp" alt="suspense" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            suspense
+                            
+                            <span class="badge badge-anim">Anim</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>50 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>30</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>4.9 MB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\ultra_win_1764086730.webp" alt="ultra_win" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            ultra_win
+                            
+                            <span class="badge badge-anim">Anim</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>642 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>30</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>17.2 MB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\ultra_win_portrait_1764086730.webp" alt="ultra_win_portrait" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            ultra_win_portrait
+                            
+                            <span class="badge badge-anim">Anim</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>600 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>30</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>14.7 MB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="asset-card">
+                    <div class="preview-container">
+                        <img src="_previews\win_highlight_1764086731.webp" alt="win_highlight" class="preview-img">
+                    </div>
+                    <div class="card-body">
+                        <div class="asset-name">
+                            win_highlight
+                            
+                            <span class="badge badge-anim">Anim</span>
+                            
+                        </div>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="specs-label">Dim:</td>
+                                <td>150 x 150 px</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Format:</td>
+                                <td>png</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Frames:</td>
+                                <td>30</td>
+                            </tr>
+                            <tr>
+                                <td class="specs-label">Size:</td>
+                                <td>1.0 MB</td>
+                            </tr>
+                        </table>
+                        <textarea class="notes-area" placeholder="Add usage notes here..."></textarea>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <footer>
+            Generated by Slot Asset Docs Tool
+        </footer>
+    </div>
+
+    <script>
+        function scrollCarousel(btn, direction) {
+            const wrapper = btn.closest('.carousel-wrapper');
+            const carousel = wrapper.querySelector('.carousel');
+            const scrollAmount = 400; // Approximate width of an item + gap
+            
+            if (carousel) {
+                carousel.scrollBy({
+                    left: direction * scrollAmount,
+                    behavior: 'smooth'
+                });
+            }
+        }
+    </script>
+</body>
+</html>
